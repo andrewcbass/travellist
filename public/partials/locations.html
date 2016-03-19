@@ -1,0 +1,76 @@
+<div ng-show="allOrNote">
+  <div ng-show="noteEditor">
+    <div class="container center-align" id="header">
+      <h1>Here is your travel list.</h1>
+      <h4>... get excited!</h4>
+      <button class="btn" ng-click="addNewLocation()">Add a New Place!</button>
+    </div>
+
+    <div class='container'>
+      <input ng-model='searchText' class='center-align' placeholder='Search Locations'>
+      <br>
+      <div class='row'>
+        <div class="location_card card col s12" ng-repeat='location in locations | filter : searchText'>
+          <div class="location-img card-image waves-effect waves-block waves-light">
+            <h5 class='location'>{{location.city}}, {{location.state}}</h5>
+
+          </div>
+          <div class="card-content">
+            <span class="card-title activator grey-text text-darken-4">
+          View Notes
+          <i class=" icon fa fa-arrow-circle-up" ng-click="notesReturn(location.id)"></i>
+        </span>
+          </div>
+
+          <div class="card-reveal">
+            <span class="card-title grey-text text-darken-4">{{location.city}}
+          <i class="icon icon-close fa fa-arrow-circle-down"></i>
+        </span>
+            <div ng-repeat="note in locNotes">
+              <p>
+                {{note.note}}
+                <i ng-click='deleteNote(note)' class="icon-td close fa fa-times-circle"></i>
+                <i ng-click='toggleEditorView(note, location)' class="icon-td fa fa-pencil-square"></i>
+              </p>
+            </div>
+            <i class="fa fa-plus-circle fa-6 addIcon" ng-click="toggleNoteView(location)"></i>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- add note popup -->
+<div class="container" ng-hide="allOrNote">
+  <h3>{{noteFor.city}}, {{noteFor.state}}</h3>
+  <p>These notes are like tweets: 140 characters only!</p>
+  <form name="noteForm" class="col s12" ng-submit="saveNote(noteForm.$valid)">
+    <div>
+      <label>Note</label>
+      <input type="text" maxlength="140" ng-model="newNote.note" name="note" required>
+    </div>
+    <button class="btn">Save</button>
+    <button class="btn" ng-click="toggleNoteView(-1)">Cancel</button>
+
+  </form>
+</div>
+
+
+<!-- note editor popup -->
+<div class="container" ng-hide="noteEditor">
+  <h3>{{editNoteLoc.city}}, {{editNoteLoc.state}}</h3>
+  <p>These notes are like tweets: 140 characters only!</p>
+  <form name="editNoteForm" class="col s12" ng-submit="saveNoteEdit(editNoteForm.$valid)">
+    <div>
+      <label>Note</label>
+      <input type="text" maxlength="140" ng-model="editNote.note" name="note" required>
+    </div>
+    <button class="btn">Save</button>
+    <button class="btn" ng-click="toggleEditorView(-1, -1)">Cancel</button>
+
+
+  </form>
+
+
+</div>

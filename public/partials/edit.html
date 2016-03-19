@@ -1,0 +1,55 @@
+<!-- Edit list view, hides on selecting to edit or add -->
+<div>
+  <h3 class="center-align">Edit Locations</h3>
+</div>
+<div ng-hide='showBox' class='container'>
+  <div class="center-align">
+    <button ng-click='addNewLocation()' class='btn'>Add New Location</button>
+  </div>
+  <br>
+  <input ng-model='searchText' class='center-align' placeholder='Search Locations'>
+  <table class='striped'>
+    <thead>
+      <tr>
+        <th>City</th>
+        <th>State</th>
+        <th>Edit</th>
+        <th>Delete</th>
+        </th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr ng-repeat='location in locations | orderBy: "state" | filter : searchText'>
+        <td>{{location.city}}</td>
+        <td>{{location.state}}</td>
+        <td><i ng-click='editLocation(location)' class="icon-td fa fa-pencil-square"></i></td>
+        <td><i ng-click='deleteLocation(location)' class="icon-td close fa fa-times-circle"></i></td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+
+<!-- create location 'popup' -->
+<div ng-show='showBox'>
+  <div class='container'>
+    <h1>Edit this Location</h1>
+    <div class="row">
+      <form name="locationForm" class="col s12" ng-submit="saveEditLocation(locationForm.$valid)">
+        <div class="row">
+          <div class="input-field col s12">
+            <input ng-model="edit.city" type="text" class="validate" name="city" required>
+            <label class="active">City</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input type="text" class="validate" ng-model="edit.state" name="state" required>
+            <label class="active">State</label>
+          </div>
+        </div>
+        <button class='btn'>Save</button>
+        <button type="button" ng-click='editLocation()' class='btn'>Cancel</button>
+      </form>
+    </div>
+  </div>
+</div>

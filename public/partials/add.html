@@ -1,0 +1,21 @@
+<div class='container'>
+  <h1>Add a new location</h1>
+  <div class="row">
+    <form name="locationForm" class="col s12" ng-submit="saveNewLocation(locationForm.$valid)">
+      <div class="row">
+        <div class="input-field col s12">
+          <input ng-model='newLocation.city' type="text" class="validate" name="city" required>
+          <label>City</label>
+        </div>
+      </div>
+      <div class="row">
+        <div class="input-field col s12">
+          <input type="text" class="validate" ng-model="newLocation.state" name="state" required>
+          <label>State</label>
+        </div>
+      </div>
+      <button class='btn'>Save</button>
+      <button type="button" ng-click='cancelLocation()' class='btn'>Cancel</button>
+    </form>
+  </div>
+</div>
