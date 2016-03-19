@@ -14,6 +14,7 @@ app.controller('homeCtrl', function($scope, $state) {
 //locations controller
 app.controller('locationsCtrl', function($scope, $state, LocationService) {
 
+  //get locations
   LocationService.getLocations()
     .then(function(res) {
       $scope.locations = res.data;
@@ -21,6 +22,7 @@ app.controller('locationsCtrl', function($scope, $state, LocationService) {
       console.log('err', err)
     });
 
+    //get NOTES
     $scope.notesReturn = function(id) {
       LocationService.getLocationNotes(id)
         .then(function(res) {
@@ -30,23 +32,54 @@ app.controller('locationsCtrl', function($scope, $state, LocationService) {
         });
     };
 
-    $scope.deleteNote = function(note) {
-      var id = note.id;
-      LocationService.deleteNote(id)
-        .then(function(res) {
-          console.log('RES', res);
-          var index = $scope.locNotes.indexOf(note);
-          $scope.locNotes.splice(index, 1);
-        }, function(err) {
-          console.log('ERR', err);
-        });
+    //toggle view to Add NOTES
+    $scope.allOrNote = true;
+    $scope.toggleNoteView = function(location) {
+
+      if($scope.allOrNote) {
+        $scope.addNote(location);
+      }
+      $scope.allOrNote = !$scope.allOrNote;
+    };
+
+    $scope.addNote = function(lct) {
+      $scope.noteFor = lct;
     }
+
+    //save NOTES, push to view after confirm DB success
+    $scope.saveNote = function(valid) {
+      if(!valid) return;
+
+      var newNote = $scope.newNote;
+      var locId = $scope.noteFor.id;
+
+      LocationService.addNote(newNote, locId)
+      .then(function(res) {
+        $scope.newNote = {};
+        $scope.locNotes.push(newNote);
+        //hide notes add view
+        $scope.allOrNote = !$scope.allOrNote;
+
+      }, function(err) {
+        console.log("err", err);
+      });
+    }
+
+    //toggle to view NOTES editor
+    $scope.noteEditor = true;
+    $scope.toggleEditorView = function(note, city) {
+      if($scope.noteEditor) {
+        $scope.editNote(note, city);
+      }
+      $scope.noteEditor = !$scope.noteEditor;
+    };
 
     $scope.editNote = function(note, city) {
       $scope.editNoteLoc = city;
       $scope.editNote = note;
     }
 
+    //save NOTES edit, push to view after confirm DB success
     $scope.saveNoteEdit = function(valid) {
       if(!valid) return;
 
@@ -68,51 +101,25 @@ app.controller('locationsCtrl', function($scope, $state, LocationService) {
         });
     }
 
-    $scope.allOrNote = true;
-    $scope.toggleNoteView = function(location) {
-
-      if($scope.allOrNote) {
-        $scope.addNote(location);
-      }
-      $scope.allOrNote = !$scope.allOrNote;
-    };
-
-    $scope.addNote = function(lct) {
-      $scope.noteFor = lct;
+    //delete note on button click, remove from view after DB success
+    $scope.deleteNote = function(note) {
+      var id = note.id;
+      LocationService.deleteNote(id)
+      .then(function(res) {
+        var index = $scope.locNotes.indexOf(note);
+        $scope.locNotes.splice(index, 1);
+      }, function(err) {
+        console.log('ERR', err);
+      });
     }
 
-    $scope.saveNote = function(valid) {
-      if(!valid) return;
-
-      var newNote = $scope.newNote;
-      var locId = $scope.noteFor.id;
-
-      LocationService.addNote(newNote, locId)
-        .then(function(res) {
-          $scope.newNote = {};
-          $scope.locNotes.push(newNote);
-          $scope.allOrNote = !$scope.allOrNote;
-
-        }, function(err) {
-          console.log("err", err);
-        });
-    }
-
-    $scope.noteEditor = true;
-    $scope.toggleEditorView = function(note, city) {
-      if($scope.noteEditor) {
-        $scope.editNote(note, city);
-      }
-      $scope.noteEditor = !$scope.noteEditor;
-    };
-
-
+    //button at top to Add a new location
     $scope.addNewLocation = function() {
       $state.go('add');
     }
 });
 
-//edit controller
+//edit controller for locations
 app.controller('editCtrl', function($scope, $state, LocationService) {
   //populate list of locations
   LocationService.getLocations()
@@ -123,6 +130,8 @@ app.controller('editCtrl', function($scope, $state, LocationService) {
     })
 
   //delete a location from the list
+  //NOTICE:  This will also delete all notes associated with
+  //the locationId from the cascading relationship
   $scope.deleteLocation = function(location) {
     var id = location.id;
     LocationService.deleteLocation(id)
@@ -147,7 +156,6 @@ app.controller('editCtrl', function($scope, $state, LocationService) {
   //save after edit
   $scope.saveEditLocation = function(valid) {
     if (!valid) return;
-
 
     var updatedLocation = $scope.edit;
 
